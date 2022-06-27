@@ -14,22 +14,41 @@
     <script src="src/tailwind.config.js"></script>
 
     <!-- Alpine.js  -->
+    <!-- Alpine Plugins -->
+    <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Alpine Core -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 
     <title>Frontend Mentor | REST Countries API</title>
 </head>
 <body class="text-sm">
 
 <header>
- header <a class="underline" href="./country.html">to country page</a>
+    <h1>Where in the world?</h1>
+    <a class="underline" href="./country.html">to country page</a>
 </header>
 
 <main>
-  main content
+<!--  <div x-data="countriesJS">-->
+<!--      <template x-for="country in showCountries" :key="country.cca2">-->
+<!--          <div class="m-2 bg-blue-500">-->
+<!--              <img :src="country.flags.png" :alt="country.name">-->
+<!--              <p x-text="country.name"></p>-->
+<!--              <ul><li></li></ul>-->
+<!--          </div>-->
+<!--      </template>-->
+<!--  </div>-->
 </main>
 
-<script src=""></script>
+<script>
+    startCountries = fetch('https://restcountries.com/v3.1/alpha?codes=de,us,bra,isl,af,ala,alb,alg', {cache: 'no-cache'})
+        .then(response => response.json())
+        .then(data => this.countries = data)
+    console.log(startCountries);
+</script>
+<script type="text/javascript" src="./src/countries.js"></script>
 </body>
 </html>
