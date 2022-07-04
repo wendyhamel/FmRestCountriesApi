@@ -1,4 +1,5 @@
 tailwind.config = {
+    darkMode: 'class',
     theme: {
         fontFamily : {
             'sans': ['Nunito\\ Sans', 'sans-serif'],
