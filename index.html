@@ -3,6 +3,7 @@
     lang="en"
     x-data="countriesJS()"
     :class="darkMode && 'dark'"
+    x-init="all()"
 >
 <head>
     <meta charset="UTF-8">
@@ -56,7 +57,12 @@
   <div>
       <div class="p-4 flex items-baseline justify-between">
           <div>
-              <input type="search" placeholder="Search for a country..." :value="searchInput">
+              <input
+                  type="search"
+                  placeholder="Search for a country..."
+                  name="searchCountry"
+                  x-model="searchCountry"
+              >
           </div>
           <div>
               <button @click="filtersOpen = !filtersOpen" class="bg-white py-0.5 px-1.5 border rounded h-6 flex items-center gap-1">
@@ -75,7 +81,7 @@
                   x-collapse
               >
                   <template x-for="region in regions">
-                      <button @click="selectedRegion = region; filtersOpen = false" class="flex items-center justify-between gap-1 hover:bg-gray/20 ease-in-out duration-75">
+                      <button @click="selectedRegion = region; filtersOpen = false; filterCountries(region)" class="flex items-center justify-between gap-1 hover:bg-gray/20 ease-in-out duration-75">
                           <span class="capitalize" x-text="region"></span>
                           <span x-show="selectedRegion === region" class="text-blue">
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -115,7 +121,7 @@
 <!--              </template>-->
           </div>
       </div>
-      <template x-for="country in filteredCountries" :key="country.cca2">
+      <template x-for="country in countries" :key="country.cca2">
           <button class="m-2 bg-blue-500" @click="showCountry(country.cca2)">
               <img :src="country.flags.png" :alt="'flag of ' + country.name.common">
               <span x-text="country.name.common"></span>
@@ -127,12 +133,6 @@
   </div>
 </main>
 
-<script>
-    startCountries = fetch('https://restcountries.com/v3.1/all?fields=cca2,name,flags,capital,population,region,subregion,currencies,borders,languages,tld', {cache: 'no-cache'})
-        .then(response => response.json())
-        .then(data => this.countries = data)
-    console.log(startCountries);
-</script>
 <script type="text/javascript" src="./src/countries.js"></script>
 </body>
 </html>

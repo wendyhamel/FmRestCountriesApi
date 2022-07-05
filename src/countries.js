@@ -1,37 +1,42 @@
 window.countriesJS = function() {
     return {
+        api : 'https://restcountries.com/v3.1',
+        fields : 'cca2,name,flags,capital,population,region,subregion,currencies,borders,languages,tld',
         darkMode : Alpine.$persist(true),
-        filteredCountries : {},
+        countries : {},
+        searchCountry: '',
         regions : ['all', 'africa', 'america', 'asia', 'europe', 'oceania'],
-        searchInput : '',
         filtersOpen : false,
         selectedRegion: Alpine.$persist('Filter by Region'),
         showCountry : false,
 
         all() {
-            fetch('https://restcountries.com/v3.1/all?fields=cca2,name,flags,capital,population,region,subregion,currencies,borders,languages,tld', {cache: 'no-cache'})
+            fetch(this.api + '/all?fields=' + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => this.filteredCountries = data)
-            return this.filteredCountries
+                .then(data => this.countries = data)
+            return this.countries
         },
 
-        result : {},
-        getEachItem(object) {
-            object.forEach(item => {
-                this.searchItem(item)
-            })
-
+        byRegion(region) {
+            fetch(this.api + '/region/' + region + '?fields=' + this.fields, {cache: 'no-cache'})
+                .then(response => response.json())
+                .then(data => this.countries = data)
+            return this.countries
         },
 
-        searchItem(item) {
-            Object.keys(item).forEach(key => {
-                if (typeof item[key] === "object") {
-                    this.searchItem(item[key])
-                }
-                if (typeof item[key] === "string") {
-                    this.result.push(item.id)
-                }
-            })
+        single(name) {
+            fetch(this.api + '/name/' + name + '?fields='  + this.fields, {cache: 'no-cache'})
+                .then(response => response.json())
+                .then(data => this.countries = data)
+            return this.countries
+        },
+
+        filterCountries(region) {
+            if(region === 'all') {
+                this.all()
+            } else {
+                this.byRegion(region)
+            }
         }
 
     }
