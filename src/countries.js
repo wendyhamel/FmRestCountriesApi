@@ -1,14 +1,15 @@
 window.countriesJS = function() {
     return {
-        api : 'https://restcountries.com/v3.1',
-        fields : 'cca2,name,flags,capital,population,region,subregion,currencies,borders,languages,tld',
         darkMode : Alpine.$persist(true),
-        countries : {},
-        searchCountry: '',
+        api : 'https://restcountries.com/v3.1',
+        fields : 'cca3,name,flags,capital,population,region,subregion,currencies,borders,languages,tld',
         regions : ['all', 'africa', 'america', 'asia', 'europe', 'oceania'],
-        filtersOpen : false,
         selectedRegion: Alpine.$persist('Filter by Region'),
+        filtersOpen : false,
+        countries : [],
+        singleCountry : false,
         showCountry : false,
+        searchCountry: '',
 
         all() {
             fetch(this.api + '/all?fields=' + this.fields, {cache: 'no-cache'})
@@ -24,18 +25,31 @@ window.countriesJS = function() {
             return this.countries
         },
 
-        single(name) {
-            fetch(this.api + '/name/' + name + '?fields='  + this.fields, {cache: 'no-cache'})
+        single(cca3) {
+            fetch(this.api + '/alpha/' + cca3 + '?fields='  + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => this.countries = data)
-            return this.countries
+                .then(data => this.singleCountry = data)
+            return this.singleCountry
+        },
+
+        searchByName(name) {
+            if (this.searchCountry === '' || this.searchCountry === false) {
+                this.filterCountries('all')
+            } else {
+                fetch(this.api + '/name/' + name + '?fields='  + this.fields, {cache: 'no-cache'})
+                    .then(response => response.json())
+                    .then(data => this.countries = data)
+                return this.countries
+            }
         },
 
         filterCountries(region) {
             if(region === 'all') {
                 this.all()
+                this.searchCountry = ''
             } else {
                 this.byRegion(region)
+                this.searchCountry = ''
             }
         }
 

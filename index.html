@@ -62,7 +62,11 @@
                   placeholder="Search for a country..."
                   name="searchCountry"
                   x-model="searchCountry"
+                  @click.outside="searchByName(searchCountry)"
+                  @click.enter="searchByName(searchCountry)"
+                  @click.scape="searchCountry = ''"
               >
+              <button @click="searchByName(searchCountry)">FIND</button>
           </div>
           <div>
               <button @click="filtersOpen = !filtersOpen" class="bg-white py-0.5 px-1.5 border rounded h-6 flex items-center gap-1">
@@ -97,42 +101,68 @@
           <div
               x-show="showCountry"
               style="display: none"
+              class="bg-black/10 h-screen w-full fixed grid place-items-center"
           >
-              test
-<!--              <template x-for="country in showCountry" :key="country.cca2">-->
-<!--                  <img :src="country.flags.png" :alt=" 'flag of ' + country.name.common">-->
-<!--                  <p x-text="country.name.common"></p>-->
-<!--                  <p x-text="country.name.nativeName"></p>-->
-<!--                  <p x-text="country.population"></p>-->
-<!--                  <p x-text="country.region"></p>-->
-<!--                  <p x-text="country.subregion"></p>-->
-<!--                  <p x-text="country.capital"></p>-->
-<!--                  <p x-text="country.tld"></p>-->
-<!--                  <template x-for="currency in country.currencies">-->
-<!--                      <p x-text="currency"></p>-->
-<!--                  </template>-->
-<!--                  <p x-text="country.capital"></p>-->
-<!--                  <template x-for="language in country.languages">-->
-<!--                      <p x-text="language"></p>-->
-<!--                  </template>-->
-<!--                  <template x-for="bcountry in country.borders">-->
-<!--                      <p x-text="bcountry"></p>-->
-<!--                  </template>-->
-<!--              </template>-->
+              <template x-if="singleCountry">
+                  <div class="bg-white">
+                      <button @click="showCountry = false">BACK</button>
+                      <img :src="singleCountry.flags.png" :alt=" 'flag of ' + singleCountry.name.common">
+                      <p x-text="singleCountry.name.common"></p>
+                      <p x-text="singleCountry.name.official"></p>
+                      <p x-text="singleCountry.population"></p>
+                      <p x-text="singleCountry.region"></p>
+                      <p x-text="singleCountry.subregion"></p>
+                      <p x-text="singleCountry.capital"></p>
+                      <p x-text="singleCountry.tld"></p>
+                      <span>
+                       currency:
+                       <template x-for="currency in singleCountry.currencies">
+                           <p x-text="currency.name"></p>
+                       </template>
+                   </span>
+                      <p x-text="singleCountry.capital"></p>
+                      <span>
+                       languages:
+                       <template x-for="language in singleCountry.languages">
+                           <p x-text="language"></p>
+                       </template>
+                   </span>
+                      <span>
+                       borders:
+                       <template x-for="borderCountry in singleCountry.borders">
+                           <p x-text="borderCountry.cca3"></p>
+                       </template>
+                   </span>
+                  </div>
+              </template>
           </div>
       </div>
-      <template x-for="country in countries" :key="country.cca2">
-          <button class="m-2 bg-blue-500" @click="showCountry(country.cca2)">
-              <img :src="country.flags.png" :alt="'flag of ' + country.name.common">
-              <span x-text="country.name.common"></span>
-              <span x-text="country.population"></span>
-              <span x-text="country.region"></span>
-              <span x-text="country.capital"></span>
-          </button>
+      <template x-if="!countries">
+          <div>
+              no countries found..
+          </div>
+      </template>
+      <template x-if="countries">
+          <div>
+              <template x-for="country in countries" :key="country.cca3">
+                  <button class="m-2 bg-blue-500" @click="showCountry = true; single(country.cca3)">
+                      <img :src="country.flags.png" :alt="'flag of ' + country.name.common">
+                      <span x-text="country.name.common"></span>
+                      <span x-text="country.population"></span>
+                      <span x-text="country.region"></span>
+                      <span x-text="country.capital"></span>
+                  </button>
+              </template>
+          </div>
       </template>
   </div>
 </main>
-
+<!--<script>-->
+<!--    startCountries = fetch('https://restcountries.com/v3.1/all', {cache: 'no-cache'})-->
+<!--        .then(response => response.json())-->
+<!--        .then(data => this.countries = data)-->
+<!--    console.log(startCountries);-->
+<!--</script>-->
 <script type="text/javascript" src="./src/countries.js"></script>
 </body>
 </html>
