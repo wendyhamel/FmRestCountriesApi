@@ -1,6 +1,7 @@
 window.countriesJS = function() {
     return {
         darkMode : Alpine.$persist(true),
+        isLoading : true,
         api : 'https://restcountries.com/v3.1',
         fields : 'cca3,name,flags,capital,population,region,subregion,currencies,borders,languages,tld',
         regions : ['all', 'africa', 'america', 'asia', 'europe', 'oceania'],
@@ -14,21 +15,21 @@ window.countriesJS = function() {
         all() {
             fetch(this.api + '/all?fields=' + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => this.countries = data)
+                .then(data => {this.countries = data; this.isLoading = false})
             return this.countries
         },
 
         byRegion(region) {
             fetch(this.api + '/region/' + region + '?fields=' + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => this.countries = data)
+                .then(data => {this.countries = data; this.isLoading = false})
             return this.countries
         },
 
         single(cca3) {
             fetch(this.api + '/alpha/' + cca3 + '?fields='  + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => this.singleCountry = data)
+                .then(data => {this.singleCountry = data; this.isLoading = false})
             return this.singleCountry
         },
 
@@ -38,7 +39,7 @@ window.countriesJS = function() {
             } else {
                 fetch(this.api + '/name/' + name + '?fields='  + this.fields, {cache: 'no-cache'})
                     .then(response => response.json())
-                    .then(data => this.countries = data)
+                    .then(data => {this.countries = data; this.isLoading = false})
                 return this.countries
             }
         },
