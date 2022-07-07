@@ -32,8 +32,8 @@
 </head>
 <body class="antialiased bg-gray-light font-light text-sm text-blue-darkest dark:bg-blue-dark dark:text-white ease-in-out duration-150">
 
-<header class="p-4 flex items-center justify-between">
-    <h1 class="font-extrabold">Where in the world?</h1>
+<header class="px-4 pt-7 pb-8 flex items-end justify-between text-blue-darkest bg-white shadow">
+    <h1 class="font-extrabold leading-none">Where in the world?</h1>
     <button
         class="flex items-center gap-1 font-semibold"
         :class="darkMode ? 'text-white' : 'text-blue-darkest'"
@@ -41,7 +41,7 @@
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
+            class="h-4 w-4"
             fill="#fff"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -49,118 +49,127 @@
         >
             <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
-        Dark Mode
+        <span class="text-xs">Dark Mode</span>
     </button>
 </header>
 
-<main>
-  <div>
-      <div class="p-4 flex items-baseline justify-between">
-          <div>
-              <input
-                  type="search"
-                  placeholder="Search for a country..."
-                  name="searchCountry"
-                  x-model="searchCountry"
-                  @click.outside="searchByName(searchCountry)"
-                  @keyup.enter="searchByName(searchCountry)"
-                  @keyup.escape="searchCountry = ''"
-              >
-              <button @click="searchByName(searchCountry)">FIND</button>
-          </div>
-          <div>
-              <button @click="filtersOpen = !filtersOpen" class="bg-white py-0.5 px-1.5 border rounded h-6 flex items-center gap-1">
-                  <span x-show="selectedRegion !== 'all'" class="capitalize" x-text="selectedRegion"></span>
-                  <span x-show="selectedRegion === 'all'">Filter by Region</span>
-                  <span class="ease-in-out duration-75" :class="{'rotate-180' : filtersOpen}">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                      </svg>
-                  </span>
-              </button>
-              <ul
-                  x-show="filtersOpen"
-                  style="display: none"
-                  class="grid"
-                  x-collapse
-              >
-                  <template x-for="region in regions">
-                      <button @click="selectedRegion = region; filtersOpen = false; filterCountries(region)" class="flex items-center justify-between gap-1 hover:bg-gray/20 ease-in-out duration-75">
-                          <span class="capitalize" x-text="region"></span>
-                          <span x-show="selectedRegion === region" class="text-blue">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                          </span>
-                      </button>
-                  </template>
-              </ul>
-          </div>
-      </div>
-      <div class="mb-6">
-          <div
-              x-show="showCountry"
-              style="display: none"
-              class="bg-black/10 h-screen w-full fixed grid place-items-center"
-          >
-              <template x-if="singleCountry">
-                  <div class="bg-white">
-                      <button @click="showCountry = false">BACK</button>
-                      <img :src="singleCountry.flags.png" :alt=" 'flag of ' + singleCountry.name.common">
-                      <p x-text="singleCountry.name.common"></p>
-                      <p x-text="singleCountry.name.official"></p>
-                      <p x-text="singleCountry.population"></p>
-                      <p x-text="singleCountry.region"></p>
-                      <p x-text="singleCountry.subregion"></p>
-                      <p x-text="singleCountry.capital"></p>
-                      <p x-text="singleCountry.tld"></p>
-                      <div>
-                          currency:
-                          <template x-for="currency in singleCountry.currencies">
-                              <p x-text="currency.name"></p>
-                          </template>
-                      </div>
-                      <p x-text="singleCountry.capital"></p>
-                      <div>
-                          languages:
-                          <template x-for="language in singleCountry.languages">
-                              <p x-text="language"></p>
-                          </template>
-                      </div>
-                      <template x-if="singleCountry.borders.length > 0">
-                          <div>
-                              borders:
-                               <template x-for="borderCountry in singleCountry.borders">
-                                   <button @click="single(borderCountry)" x-text="borderCountry"></button>
-                               </template>
-                          </div>
-                      </template>
-                  </div>
-              </template>
-          </div>
-      </div>
-      <template x-if="!countries">
-          <div>
-              no countries found..
-          </div>
-      </template>
-          <template x-if="isLoading">
-              <div>loading countries...</div>
-          </template>
-          <template x-if="!isLoading && countries.length >= 1">
-              <div>
-                  <template x-for="country in countries" :key="country.cca3">
-                      <button class="m-2 bg-blue-500" @click="showCountry = true; single(country.cca3)">
-                          <img :src="country.flags.png" :alt="'flag of ' + country.name.common">
-                          <span x-text="country.name.common"></span>
-                          <span x-text="country.population"></span>
-                          <span x-text="country.region"></span>
-                          <span x-text="country.capital"></span>
-                      </button>
-                  </template>
-              </div>
-          </template>
-  </div>
+<main class="pt-2 text-blue-darkest">
+    <section class="p-4 flex flex-col gap-9 items-baseline justify-between">
+        <label id="searchCountry" class="w-full flex flex-row-reverse items-center gap-6 px-8 bg-white shadow rounded">
+            <input
+                type="search"
+                placeholder="Search for a country..."
+                name="searchCountry"
+                x-model="searchCountry"
+                @keyup="searchByName(searchCountry)"
+                @keyup.escape="searchCountry = ''"
+                class="h-full w-full py-4 peer placeholder:text-gray placeholder:text-xs focus:outline-none"
+            >
+            <svg class="w-5 h-5 text-gray peer-focus:text-blue-darkest" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </label>
+        <div class="relative">
+            <button @click="filtersOpen = !filtersOpen" class="relative w-full min-w-[200px] flex items-center justify-between gap-1 px-6 py-4 bg-white shadow rounded text-xs">
+                <span x-show="selectedRegion !== 'all'" class="capitalize" x-text="selectedRegion"></span>
+                <span x-show="selectedRegion === 'all'">Filter by Region</span>
+                <span class="ease-in-out duration-75" :class="{'rotate-180' : filtersOpen}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                </span>
+            </button>
+            <ul
+                x-show="filtersOpen"
+                style="display: none"
+                class="grid absolute z-10 w-full mt-1 py-3 shadow rounded bg-white text-xs"
+                x-collapse.duration.150ms
+            >
+                <template x-for="region in regions">
+                    <button
+                        x-show="selectedRegion !== region"
+                        @click="selectedRegion = region; filtersOpen = false; filterCountries(region)"
+                        class="flex items-center justify-between gap-1 py-1 px-6 capitalize hover:bg-gray/10 ease-in-out duration-75"
+                        x-text="region"
+                    >
+                    </button>
+                </template>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <div
+            x-show="showCountry"
+            style="display: none"
+            class="fixed inset-x-0 top-20 z-20 bg-white"
+        >
+            <template x-if="singleCountry">
+                <div class="bg-white">
+                    <button
+                            @click="showCountry = false"
+                            class="rounded shadow px-4 py-2"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back
+                    </button>
+                    <img :src="singleCountry.flags.png" :alt=" 'flag of ' + singleCountry.name.common">
+                    <p x-text="singleCountry.name.common"></p>
+                    <p x-text="singleCountry.name.official"></p>
+                    <p x-text="singleCountry.population"></p>
+                    <p x-text="singleCountry.region"></p>
+                    <p x-text="singleCountry.subregion"></p>
+                    <p x-text="singleCountry.capital"></p>
+                    <p x-text="singleCountry.tld"></p>
+                    <div>
+                        currency:
+                        <template x-for="currency in singleCountry.currencies">
+                            <p x-text="currency.name"></p>
+                        </template>
+                    </div>
+                    <p x-text="singleCountry.capital"></p>
+                    <div>
+                        languages:
+                        <template x-for="language in singleCountry.languages">
+                            <p x-text="language"></p>
+                        </template>
+                    </div>
+                    <template x-if="singleCountry.borders.length > 0">
+                        <div>
+                            borders:
+                             <template x-for="borderCountry in singleCountry.borders">
+                                 <button @click="single(borderCountry)" x-text="borderCountry"></button>
+                             </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </section>
+    <section class="mx-12">
+        <template x-if="isLoading">
+            <div>loading countries...</div>
+        </template>
+        <template x-if="!isLoading && countries.length >= 1">
+            <div class="grid gap-9">
+                <template x-for="country in countries" :key="country.cca3">
+                    <div
+                        class="relative max-w-xs rounded shadow bg-white overflow-hidden"
+                    >
+                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"></button>
+                        <div class="h-[152px] w-full overflow-hidden">
+                            <img :src="country.flags.png" :alt="'flag of ' + country.name.common" class="object-cover">
+                        </div>
+                        <div class="px-5 pt-6 pb-10">
+                            <h2 class="font-extrabold text-lg tracking-wide" x-text="country.name.common"></h2>
+                           <div class="mt-3 grid gap-1.5">
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Population:</span><span x-text="country.population"></span></p>
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Region:</span><span x-text="country.region"></span></p>
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Capital:</span><span x-text="country.capital"></span></p>
+                           </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </section>
 </main>
 <script>
     startCountries = fetch('https://restcountries.com/v3.1/all', {cache: 'no-cache'})
