@@ -32,7 +32,7 @@
 </head>
 <body class="antialiased bg-gray-light font-light text-sm text-blue-darkest dark:bg-blue-dark dark:text-white ease-in-out duration-150">
 
-<header class="px-4 pt-7 pb-8 flex items-end justify-between text-blue-darkest bg-white shadow">
+<header class="fixed z-30 top-0 w-full px-4 pt-7 pb-8 flex items-end justify-between text-blue-darkest bg-white shadow">
     <h1 class="font-extrabold leading-none">Where in the world?</h1>
     <button
         class="flex items-center gap-1 font-semibold"
@@ -53,7 +53,7 @@
     </button>
 </header>
 
-<main class="pt-2 text-blue-darkest">
+<main class="mt-20 pt-2 text-blue-darkest">
     <section class="p-4 flex flex-col gap-9 items-baseline justify-between">
         <label id="searchCountry" class="w-full flex flex-row-reverse items-center gap-6 px-8 bg-white shadow rounded">
             <input
@@ -99,46 +99,61 @@
         <div
             x-show="showCountry"
             style="display: none"
-            class="fixed inset-x-0 top-20 z-20 bg-white"
+            class="fixed inset-0 z-20 bg-white overflow-y-scroll"
         >
             <template x-if="singleCountry">
-                <div class="bg-white">
+                <div class="bg-gray-light h-full mt-20 pt-8 px-6">
                     <button
                             @click="showCountry = false"
-                            class="rounded shadow px-4 py-2"
+                            class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm border border-transparent hover:border-gray ease-in-out duration-75"
                     >
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         Back
                     </button>
-                    <img :src="singleCountry.flags.png" :alt=" 'flag of ' + singleCountry.name.common">
-                    <p x-text="singleCountry.name.common"></p>
-                    <p x-text="singleCountry.name.official"></p>
-                    <p x-text="singleCountry.population"></p>
-                    <p x-text="singleCountry.region"></p>
-                    <p x-text="singleCountry.subregion"></p>
-                    <p x-text="singleCountry.capital"></p>
-                    <p x-text="singleCountry.tld"></p>
-                    <div>
-                        currency:
-                        <template x-for="currency in singleCountry.currencies">
-                            <p x-text="currency.name"></p>
-                        </template>
-                    </div>
-                    <p x-text="singleCountry.capital"></p>
-                    <div>
-                        languages:
-                        <template x-for="language in singleCountry.languages">
-                            <p x-text="language"></p>
-                        </template>
-                    </div>
-                    <template x-if="singleCountry.borders.length > 0">
-                        <div>
-                            borders:
-                             <template x-for="borderCountry in singleCountry.borders">
-                                 <button @click="single(borderCountry)" x-text="borderCountry"></button>
-                             </template>
+                    <div class="mt-12">
+                        <div class="pt-2 max-h-[228px] overflow-hidden">
+                            <img :src="singleCountry.flags.png" :alt=" 'flag of ' + singleCountry.name.common" class="object-contain h-[228px]">
                         </div>
-                    </template>
+                        <div class="py-10 grid gap-8">
+                            <div class="grid gap-2.5">
+                                <div>
+                                    <h2 class="font-extrabold text-xl tracking-wide mb-3.5" x-text="singleCountry.name.common"></h2>
+                                </div>
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Native Name:</span><span x-text="singleCountry.name.official"></span></p>
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Population:</span><span x-text="singleCountry.population"></span></p>
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Region:</span><span x-text="singleCountry.region"></span></p>
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Sub Region:</span><span x-text="singleCountry.subregion"></span></p>
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Capital:</span><span x-text="singleCountry.capital"></span></p>
+                            </div>
+                            <div class="grid gap-2.5">
+                                <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Top Level Domain:</span><span x-text="singleCountry.tld"></span></p>
+                                <div>
+                                    <span class="font-semibold">Currencies:</span>
+                                    <template x-for="currency in singleCountry.currencies">
+                                        <span x-text="currency.name + ', '"></span>
+                                    </template>
+                                </div>
+                                <div>
+                                    <span class="font-semibold">languages:</span>
+                                    <template x-for="language in singleCountry.languages">
+                                        <span x-text="language + ', '"></span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div>
+                                <template x-if="singleCountry.borders.length > 0">
+                                    <div>
+                                        <p class="font-semibold text-[1.075rem] mb-3">Border countries:</p>
+                                        <div class="flex flex-wrap gap-2">
+                                             <template x-for="borderCountry in singleCountry.borders">
+                                                 <button @click="single(borderCountry)" x-text="borderCountry" class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm border border-transparent hover:border-gray ease-in-out duration-75"></button>
+                                             </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </div>
