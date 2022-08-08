@@ -2,6 +2,7 @@ window.countriesJS = function() {
     return {
         darkMode : Alpine.$persist(true),
         isLoading : true,
+        isLoadingCountry : true,
         api : 'https://restcountries.com/v3.1',
         fields : 'cca3,name,flags,capital,population,region,subregion,currencies,borders,languages,tld',
         regions : ['all', 'africa', 'america', 'asia', 'europe', 'oceania'],
@@ -29,7 +30,7 @@ window.countriesJS = function() {
         single(cca3) {
             fetch(this.api + '/alpha/' + cca3 + '?fields='  + this.fields, {cache: 'no-cache'})
                 .then(response => response.json())
-                .then(data => {this.singleCountry = data; this.isLoading = false})
+                .then(data => {this.singleCountry = data; this.isLoadingCountry = false})
             return this.singleCountry
         },
 
