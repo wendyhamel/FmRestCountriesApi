@@ -20,6 +20,7 @@
 
     <!-- Alpine.js  -->
     <!-- Alpine Plugins -->
+    <script defer src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 
@@ -32,30 +33,32 @@
 </head>
 <body class="antialiased bg-gray-light font-light text-sm text-blue-darkest dark:bg-blue-dark dark:text-white ease-in-out duration-150">
 
-<header class="fixed z-30 top-0 w-full px-4 pt-7 pb-8 flex items-end justify-between text-blue-darkest bg-white shadow">
-    <h1 class="font-extrabold leading-none">Where in the world?</h1>
-    <button
-        class="flex items-center gap-1 font-semibold"
-        :class="darkMode ? 'text-white' : 'text-blue-darkest'"
-        @click="darkMode = ! darkMode"
-    >
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4"
-            fill="#fff"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1"
+<header class="fixed z-30 top-0 w-full pt-7 pb-8 bg-white shadow-md md:pt-5 md:pb-6">
+    <div class="flex items-end justify-between text-blue-darkest px-4 md:px-12 xl:mx-auto xl:px-4 xl:max-w-screen-xl">
+        <h1 class="font-extrabold leading-none md:text-2xl">Where in the world?</h1>
+        <button
+            class="flex items-center gap-1 font-semibold md:gap-2"
+            :class="darkMode ? 'text-white' : 'text-blue-darkest'"
+            @click="darkMode = ! darkMode"
         >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-        <span class="text-xs">Dark Mode</span>
-    </button>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 md:h-5 md:w-5"
+                fill="#fff"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <span class="text-xs md:text-base">Dark Mode</span>
+        </button>
+    </div>
 </header>
 
-<main class="mt-20 pt-2 text-blue-darkest">
-    <section class="p-4 flex flex-col gap-9 items-baseline justify-between">
-        <label id="searchCountry" class="w-full flex flex-row-reverse items-center gap-6 px-8 bg-white shadow rounded">
+<main class="mt-20 pt-2 text-blue-darkest md:mt-24 pt-3">
+    <section class="px-4 pt-4 pb-10 flex flex-col gap-9 items-baseline justify-between md:flex-row md:mx-auto md:px-12 xl:px-4 xl:max-w-screen-xl">
+        <label id="searchCountry" class="w-full flex flex-row-reverse items-center gap-6 px-8 bg-white shadow rounded md:max-w-md">
             <input
                 type="search"
                 placeholder="Search for a country..."
@@ -63,12 +66,12 @@
                 x-model="searchCountry"
                 @keyup="searchByName(searchCountry)"
                 @keyup.escape="searchCountry = ''"
-                class="h-full w-full py-4 peer placeholder:text-gray placeholder:text-xs focus:outline-none"
+                class="h-full w-full py-4 peer placeholder:text-gray placeholder:text-xs focus:outline-none md:py-5 md:placeholder:text-sm"
             >
             <svg class="w-5 h-5 text-gray peer-focus:text-blue-darkest" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </label>
         <div class="relative">
-            <button @click="filtersOpen = !filtersOpen" class="relative w-full min-w-[200px] flex items-center justify-between gap-1 px-6 py-4 bg-white shadow rounded text-xs">
+            <button @click="filtersOpen = !filtersOpen" class="relative w-full min-w-[200px] flex items-center justify-between gap-1 px-6 py-4 bg-white shadow rounded text-xs md:py-5">
                 <span x-show="selectedRegion !== 'all'" class="capitalize" x-text="selectedRegion"></span>
                 <span x-show="selectedRegion === 'all'">Filter by Region</span>
                 <span class="ease-in-out duration-75" :class="{'rotate-180' : filtersOpen}">
@@ -80,7 +83,7 @@
             <ul
                 x-show="filtersOpen"
                 style="display: none"
-                class="grid absolute z-10 w-full mt-1 py-3 shadow rounded bg-white text-xs"
+                class="grid absolute z-10 w-full mt-1 py-3 shadow rounded bg-white text-xs md:text-sm"
                 x-collapse.duration.150ms
             >
                 <template x-for="region in regions">
@@ -95,11 +98,41 @@
             </ul>
         </div>
     </section>
+
+    <section class="mx-12 flex justify-center xl:mx-auto xl:max-w-screen-xl xl:px-4">
+        <template x-if="isLoading">
+            <div>loading countries...</div>
+        </template>
+        <template x-if="!isLoading && countries.length >= 1">
+            <div class="grid gap-9 md:grid-cols-2 md:gap-20 lg:grid-cols-3 xl:grid-cols-4">
+                <template x-for="country in countries" :key="country.cca3">
+                    <div
+                        class="relative max-w-xs rounded shadow bg-white overflow-hidden"
+                    >
+                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"></button>
+                        <div class="h-[152px] w-full overflow-hidden xl:h-[158px]">
+                            <img :src="country.flags.png" :alt="'flag of ' + country.name.common" class="object-cover">
+                        </div>
+                        <div class="px-5 pt-6 pb-10">
+                            <h2 class="font-extrabold text-lg tracking-wide" x-text="country.name.common"></h2>
+                           <div class="mt-3 grid gap-1.5">
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Population:</span><span x-text="country.population"></span></p>
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Region:</span><span x-text="country.region"></span></p>
+                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Capital:</span><span x-text="country.capital"></span></p>
+                           </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </section>
+
     <section>
         <div
-            x-show="showCountry"
-            style="display: none"
-            class="fixed inset-0 z-20 bg-white overflow-y-scroll"
+                x-show="showCountry"
+                x-trap.inert.noscroll="showCountry"
+                style="display: none"
+                class="fixed inset-0 z-20 bg-white overflow-y-scroll"
         >
             <template x-if="singleCountry">
                 <div class="bg-gray-light h-full mt-20 pt-8 px-6">
@@ -145,9 +178,9 @@
                                     <div>
                                         <p class="font-semibold text-[1.075rem] mb-3">Border countries:</p>
                                         <div class="flex flex-wrap gap-2">
-                                             <template x-for="borderCountry in singleCountry.borders">
-                                                 <button @click="single(borderCountry)" x-text="borderCountry" class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm border border-transparent hover:border-gray ease-in-out duration-75"></button>
-                                             </template>
+                                            <template x-for="borderCountry in singleCountry.borders">
+                                                <button @click="single(borderCountry)" x-text="borderCountry" class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm border border-transparent hover:border-gray ease-in-out duration-75"></button>
+                                            </template>
                                         </div>
                                     </div>
                                 </template>
@@ -158,40 +191,7 @@
             </template>
         </div>
     </section>
-    <section class="mx-12">
-        <template x-if="isLoading">
-            <div>loading countries...</div>
-        </template>
-        <template x-if="!isLoading && countries.length >= 1">
-            <div class="grid gap-9">
-                <template x-for="country in countries" :key="country.cca3">
-                    <div
-                        class="relative max-w-xs rounded shadow bg-white overflow-hidden"
-                    >
-                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"></button>
-                        <div class="h-[152px] w-full overflow-hidden">
-                            <img :src="country.flags.png" :alt="'flag of ' + country.name.common" class="object-cover">
-                        </div>
-                        <div class="px-5 pt-6 pb-10">
-                            <h2 class="font-extrabold text-lg tracking-wide" x-text="country.name.common"></h2>
-                           <div class="mt-3 grid gap-1.5">
-                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Population:</span><span x-text="country.population"></span></p>
-                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Region:</span><span x-text="country.region"></span></p>
-                               <p class="inline-flex items-baseline gap-1"><span class="font-semibold">Capital:</span><span x-text="country.capital"></span></p>
-                           </div>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </template>
-    </section>
 </main>
-<script>
-    startCountries = fetch('https://restcountries.com/v3.1/all', {cache: 'no-cache'})
-        .then(response => response.json())
-        .then(data => this.countries = data)
-    console.log(startCountries);
-</script>
 <script type="text/javascript" src="./src/countries.js"></script>
 </body>
 </html>
