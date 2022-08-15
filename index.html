@@ -64,7 +64,7 @@
                 placeholder="Search for a country..."
                 name="searchCountry"
                 x-model="searchCountry"
-                @keyup="searchByName(searchCountry)"
+                @input.debounce="searchByName(searchCountry)"
                 @keyup.escape="searchCountry = ''"
                 class="h-full w-full py-4 bg-transparent peer placeholder:text-gray placeholder:text-xs focus:outline-none dark:placeholder:text-gray-light dark:text-white md:py-5 md:placeholder:text-sm ease-in-out duration-150"
             >
