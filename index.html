@@ -110,7 +110,7 @@
                     <div
                         class="relative max-w-xs rounded shadow bg-white overflow-hidden dark:bg-blue ease-in-out duration-150"
                     >
-                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"></button>
+                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"><span class="sr-only" x-text="'show ' + country.name.common"></span></button>
                         <div class="h-[152px] w-full overflow-hidden xl:h-[158px]">
                             <img :src="country.flags.png" :alt="'flag of ' + country.name.common" class="object-cover">
                         </div>
