@@ -3,7 +3,7 @@
     lang="en"
     x-data="countriesJS()"
     :class="darkMode && 'dark'"
-    x-init="all()"
+    x-init="getAll()"
 >
 <head>
     <meta charset="UTF-8">
@@ -64,7 +64,6 @@
                 placeholder="Search for a country..."
                 name="searchCountry"
                 x-model="searchCountry"
-                @input.debounce="searchByName(searchCountry)"
                 @keyup.escape="searchCountry = ''"
                 class="h-full w-full py-4 bg-transparent peer placeholder:text-gray placeholder:text-xs focus:outline-none dark:placeholder:text-gray-light dark:text-white md:py-5 md:placeholder:text-sm ease-in-out duration-150"
             >
@@ -72,8 +71,8 @@
         </label>
         <div class="relative" @keyup.escape="filtersOpen = false">
             <button @click="filtersOpen = !filtersOpen" class="relative w-full min-w-[200px] flex items-center justify-between gap-1 px-6 py-4 bg-white shadow rounded text-xs dark:bg-blue dark:text-white md:py-5 ease-in-out duration-150">
-                <span x-show="selectedRegion !== 'all'" class="capitalize" x-text="selectedRegion"></span>
-                <span x-show="selectedRegion === 'all'">Filter by Region</span>
+                <span x-show="selectedRegion !== 'All'" x-text="selectedRegion"></span>
+                <span x-show="selectedRegion === 'All'">Filter by Region</span>
                 <span class="ease-in-out duration-75" :class="{'rotate-180' : filtersOpen}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
@@ -89,11 +88,15 @@
             >
                 <template x-for="region in regions">
                     <button
-                        x-show="selectedRegion !== region"
-                        @click="selectedRegion = region; filtersOpen = false; filterCountries(region)"
+                        @click="selectedRegion = region; filtersOpen = false"
                         class="flex items-center justify-between gap-1 py-1 px-6 capitalize hover:bg-gray/10 ease-in-out duration-75"
-                        x-text="region"
                     >
+                        <span x-text="region"></span>
+                        <span x-show="selectedRegion === region">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                        </span>
                     </button>
                 </template>
             </ul>
@@ -101,16 +104,19 @@
     </section>
 
     <section class="mx-12 flex justify-center dark:text-white xl:mx-auto xl:max-w-screen-xl xl:px-4 ease-in-out duration-150">
-        <template x-if="isLoading">
-            <div>loading countries...</div>
-        </template>
-        <template x-if="!isLoading && countries.length >= 1">
+        <div x-show="isLoading">
+            <p>loading countries...</p>
+        </div>
+        <div x-show="getCountries().length === 0 && !isLoading">
+            <p>no countries found...</p>
+        </div>
+        <template x-if="!isLoading && getCountries().length >= 1">
             <div class="grid gap-9 md:grid-cols-2 md:gap-20 lg:grid-cols-3 xl:grid-cols-4">
-                <template x-for="country in countries" :key="country.cca3">
+                <template x-for="country in getCountries()" :key="country.cca3">
                     <div
                         class="relative max-w-xs rounded shadow bg-white overflow-hidden dark:bg-blue ease-in-out duration-150"
                     >
-                        <button type="button" @click="showCountry = true; single(country.cca3)" class="absolute inset-0"><span class="sr-only" x-text="'show ' + country.name.common"></span></button>
+                        <button type="button" @click="showCountry = true; getSingleCountry(country.cca3)" class="absolute inset-0"><span class="sr-only" x-text="'show ' + country.name.common"></span></button>
                         <div class="h-[152px] w-full overflow-hidden xl:h-[158px]">
                             <img :src="country.flags.png" :alt="'flag of ' + country.name.common" class="object-cover">
                         </div>
@@ -135,13 +141,10 @@
                 style="display: none"
                 class="fixed inset-0 z-20 flex items-stretch bg-gray-light w-full overflow-y-scroll dark:bg-blue-dark dark:text-white ease-in-out duration-150"
         >
-            <template x-if="isLoadingCountry">
-                <div>loading country...</div>
-            </template>
             <template x-if="singleCountry">
                 <div class="mt-20 pt-8 px-6 w-full md:px-12 md:mt-36 md:pt-2 xl:mx-auto xl:max-w-screen-xl xl:px-4">
                     <button
-                            @click="showCountry = false; singleCountry = false; isLoadingCountry = true"
+                            @click="showCountry = false; singleCountry = false"
                             class="rounded shadow-lg px-6 py-1.5 bg-white flex items-center gap-2 text-sm border border-transparent dark:bg-blue dark:text-white hover:border-gray ease-in-out duration-75 md:text-base"
                     >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -184,8 +187,8 @@
                                     <div class="pt-8 flex gap-3 flex-col xl:flex-row xl:items-center">
                                         <p class="font-semibold text-[1.075rem]">Border countries:</p>
                                         <div class="flex flex-wrap gap-2">
-                                            <template x-for="borderCountry in singleCountry.borders">
-                                                <button @click="single(borderCountry)" x-text="borderCountry" class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm leading-none border border-transparent dark:bg-blue dark:text-white hover:border-gray ease-in-out duration-75"></button>
+                                            <template x-for="borderCountry in getBorderCountriesFor(singleCountry.borders)">
+                                                <button @click="getSingleCountry(borderCountry.cca3)" x-text="borderCountry.name.common" class="rounded shadow px-6 py-1.5 bg-white flex items-center gap-2 text-sm leading-none border border-transparent dark:bg-blue dark:text-white hover:border-gray ease-in-out duration-75"></button>
                                             </template>
                                         </div>
                                     </div>
